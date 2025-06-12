@@ -64,7 +64,7 @@ fabryka-klikow/
 
 ## 📝 Credits
 
-Created by Mi1y & wojciech-karcz 
+Created by <b>Mi1y & wojciech-karcz</b> <br>
 Inspired by classic idle/clicker games
 
 ---
