@@ -70,13 +70,13 @@ function checkUnlockedFloors() {
     if (!game.unlockedFloors.includes(nextFloor)) {
       game.unlockedFloors.push(nextFloor);
       if (!game.shownFloorAlerts.includes(nextFloor)) {
-        alert(`🏢 Odblokowano nowe piętro: ${floors.find(f => f.id === nextFloor).name}`);
+        // alert(`🏢 Odblokowano nowe piętro: ${floors.find(f => f.id === nextFloor).name}`);
         game.shownFloorAlerts.push(nextFloor);
         saveGame();
       }
     }
     game.currentFloor = nextFloor;
-    alert(`⬆️ Przeniesiono na ${floors.find(f => f.id === nextFloor).name}`);
+    // alert(`⬆️ Przeniesiono na ${floors.find(f => f.id === nextFloor).name}`);
     checkUnlockedMachines();
   }
 }
@@ -104,7 +104,7 @@ function attackBoss() {
     game.clicks -= cost;
     game.clicks += game.currentBoss.reward;
 
-    alert(`🎊 Pokonano ${game.currentBoss.name}! Nagroda: ${game.currentBoss.reward} klików`);
+    // alert(`🎊 Pokonano ${game.currentBoss.name}! Nagroda: ${game.currentBoss.reward} klików`);
     
     game.defeatedBosses.push(game.currentBoss.floorId);
     game.currentBoss = null;
