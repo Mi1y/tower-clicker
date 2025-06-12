@@ -6,27 +6,33 @@
   <title>Fabryka Klików - Idle Game</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <script defer src="fabryka-klikow.js"></script>
 </head>
 <body>
 
-  <h1>🤖 Fabryka Klików 🤖</h1>
+  <div id="content">
 
-  <div id="clicks" title="Kliksy">Kliksy: 0</div>
+    <h1>🤖 Fabryka Klików 🤖</h1>
 
-  <button id="click-btn" aria-label="Kliknij, aby zdobyć kliksy">Zbieraj kliksy</button>
+    <div id="clicks" title="Kliksy">Kliksy: 0</div>
 
-  <div id="machines">
-    <h2>Maszyny</h2>
-  </div>
+    <button id="click-btn" aria-label="Kliknij, aby zdobyć kliksy">Zbieraj kliksy</button>
 
-  <div id="footer">
-    <p>Prosta gra idle — klikaj i ulepszaj maszyny!</p>
-    <button onclick="exportJson()">Eksportuj grę</button>
-    <button onclick="resetGame()">Resetuj grę</button>
-    <div>    
-    <input type="file" id="importFile" accept=".json" onchange="importJson(event)" />
+    <div id="machines"></div>
+
+    <div id="footer">
+      <p>Prosta gra idle — klikaj i ulepszaj maszyny!</p>
+      <button onclick="resetGame()">Resetuj grę</button>
+      <button onclick="exportJson()">Eksportuj grę</button>
+      <div id="footer-import">
+        <label for="importFile">Importuj grę:</label>    
+        <input type="file" id="importFile" accept=".json" onchange="importJson(event)" />
+      </div>
     </div>
+
   </div>
 
 </body>
