@@ -71,7 +71,7 @@ Inspired by classic idle/clicker games
 
 ## 📜 License
 
-This project is for educational and personal use
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
