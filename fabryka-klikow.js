@@ -50,7 +50,10 @@ function getUpgradeCost(machine) {
 }
 
 function renderMachines() {
-  game.machines.forEach(machine => {
+  // czyści poprzednie maszyny przed upgrade
+  machinesDiv.innerHTML = '';
+
+    game.machines.forEach(machine => {
     const machineDiv = document.createElement('div');
     machineDiv.className = 'machine';
 
