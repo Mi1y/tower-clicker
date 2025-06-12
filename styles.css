@@ -235,3 +235,75 @@ h2 {
 #footer input[type="file"]:hover {
   background: rgba(255,255,255,0.3);
 }
+
+.boss-fight {
+  background: linear-gradient(135deg, #ff4444, #cc0000);
+  border: 3px solid #990000;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  color: white;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+}
+
+.boss-info {
+  margin: 15px 0;
+}
+
+.boss-name {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.boss-hp-bar {
+  width: 100%;
+  height: 20px;
+  background: #330000;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+  border: 2px solid #660000;
+}
+
+.hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6666, #ff0000);
+  transition: width 0.3s ease;
+}
+
+.boss-hp {
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.boss-reward {
+  color: #ffff99;
+  font-weight: bold;
+}
+
+.attack-btn {
+  background: linear-gradient(135deg, #ffaa00, #ff6600);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  border: 3px solid #cc4400;
+}
+
+.attack-btn:hover {
+  background: linear-gradient(135deg, #ffcc00, #ff8800);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(255, 170, 0, 0.4);
+}
+
+.attack-btn:active {
+  transform: scale(0.95);
+}
+
