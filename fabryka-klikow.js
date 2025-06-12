@@ -78,6 +78,7 @@ function checkUnlockedFloors() {
     game.currentFloor = nextFloor;
     // alert(`⬆️ Przeniesiono na ${floors.find(f => f.id === nextFloor).name}`);
     checkUnlockedMachines();
+    checkUnlockedFloors();
   }
 }
 
@@ -167,6 +168,10 @@ clickBtn.addEventListener('click', () => {
   saveGame();
 });
 
+function getBuyCost(machine) {
+  // Koszt rośnie o 15% za każdą sztukę
+  return Math.ceil(machine.baseCost * Math.pow(1.15, machine.count));
+}
 // koszt ulepszenia - rośnie o 50% za każdy level
 function getUpgradeCost(machine) {
   return Math.ceil(machine.baseCost * Math.pow(2, machine.upgradeLevel));
@@ -181,32 +186,31 @@ function renderMachines() {
     machineDiv.className = 'machine';
 
     machineDiv.innerHTML = `
-        <div class="machine-info">
-          <div class="machine-name">${machine.name}</div>
-          <div class="machine-stats">
-            Ilość: ${machine.count} <br/>
-            Produkcja: ${(machine.cps * machine.count).toFixed(1)} klików/sek <br/>
-            Ulepszenia: ${machine.upgradeLevel} (x${(1 + 0.5 * machine.upgradeLevel).toFixed(2)} produkcji)
-          </div>
+      <div class="machine-info">
+        <div class="machine-name">${machine.name}</div>
+        <div class="machine-stats">
+          Ilość: ${machine.count} <br/>
+          Produkcja: ${(machine.cps * machine.count).toFixed(1)} klików/sek <br/>
+          Ulepszenia: ${machine.upgradeLevel} (x${(1 + 0.5 * machine.upgradeLevel).toFixed(2)} produkcji)
         </div>
-        <div class="buttons-group">
-          <button id="buy-${machine.id}">Kup (${machine.cost})</button>
-          <button id="upgrade-${machine.id}" ${game.clicks < getUpgradeCost(machine) ? 'disabled' : ''}>
-            Ulepsz (${getUpgradeCost(machine)})
-          </button>
-        </div>
-      `;
+      </div>
+      <div class="buttons-group">
+        <button id="buy-${machine.id}">Kup (${getBuyCost(machine)})</button>
+        <button id="upgrade-${machine.id}" ${game.clicks < getUpgradeCost(machine) ? 'disabled' : ''}>
+          Ulepsz (${getUpgradeCost(machine)})
+        </button>
+      </div>
+    `;
     machinesDiv.appendChild(machineDiv);
 
     // debug
     // console.log('Kliksy:', game.clicks, 'Koszt ulepszenia:', getUpgradeCost(machine), 'Ilość:', machine.count, 'Poziom:', machine.upgradeLevel);
 
     document.getElementById(`buy-${machine.id}`).onclick = () => {
-      if (game.clicks >= machine.cost) {
-        game.clicks -= machine.cost;
+      const buyCost = getBuyCost(machine);
+      if (game.clicks >= buyCost) {
+        game.clicks -= buyCost;
         machine.count++;
-        // koszt rośnie o 15% za każdą sztukę
-        machine.cost = Math.ceil(machine.cost * 1.15);
         updateClicks();
         renderMachines();
         saveGame();
@@ -229,6 +233,16 @@ function renderMachines() {
     };
   });
 }
+
+function updateMachineButtons() {
+  game.machines.forEach(machine => {
+    const buyBtn = document.getElementById(`buy-${machine.id}`);
+    const upgradeBtn = document.getElementById(`upgrade-${machine.id}`);
+    if (buyBtn) buyBtn.disabled = game.clicks < getBuyCost(machine);
+    if (upgradeBtn) upgradeBtn.disabled = game.clicks < getUpgradeCost(machine);
+  });
+}
+setInterval(updateMachineButtons, 100);
 
 function collectClicksPerSecond() {
   let totalCPS = 0;
