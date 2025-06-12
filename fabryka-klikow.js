@@ -6,8 +6,8 @@ let game = {
   defeatedBosses: [],
   currentBoss: null,
 
-  showFloorAlerts:[],
-  showMachineAlerts:[],
+  shownFloorAlerts:[],
+  shownMachineAlerts:[],
 };
 
 
@@ -19,6 +19,7 @@ function loadGame() {
   const saved = localStorage.getItem('clickFactoryIdleGame');
   if (saved) {
     const loaded = JSON.parse(saved);
+
     game.clicks = loaded.clicks || 0;
     game.currentFloor = loaded.currentFloor || 1;
     game.unlockedFloors = loaded.unlockedFloors || [1];
@@ -26,6 +27,7 @@ function loadGame() {
     game.currentBoss = loaded.currentBoss || null;
     game.shownFloorAlerts = loaded.shownFloorAlerts || [];
     game.shownMachineAlerts = loaded.shownMachineAlerts || [];
+
     if (loaded.machines && loaded.machines.length > 0) {
       game.machines = loaded.machines.map(machine => ({
         id: machine.id,
