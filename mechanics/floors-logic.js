@@ -105,3 +105,14 @@ function renderBossSection() {
     bossDiv.innerHTML = '';
   }
 }
+
+function updateBossButton() {
+  if (!game.currentBoss) return;
+  const btn = document.querySelector('.attack-btn');
+  if (btn) {
+    btn.disabled = game.clicks < game.currentBoss.hp;
+    btn.textContent = `Pokonaj za ${game.currentBoss.hp} klików`;
+  }
+}
+
+setInterval(updateBossButton, 100);
