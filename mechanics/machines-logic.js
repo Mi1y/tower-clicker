@@ -1,48 +1,8 @@
-function showModal(message, type = 'alert', onConfirm = null) {
-  const backdrop = document.getElementById('modal-backdrop');
-  const modal = document.getElementById('modal-window');
-  const content = document.getElementById('modal-content');
-
-  // Przyciski
-  const btnOk = document.getElementById('modal-ok-button');
-  const btnYes = document.getElementById('modal-confirm-yes');
-  const btnNo = document.getElementById('modal-confirm-no');
-
-  content.textContent = message;
-
-  // Reset visibility
-  btnOk.classList.add('hidden');
-  btnYes.classList.add('hidden');
-  btnNo.classList.add('hidden');
-
-  if (type === 'alert') {
-    btnOk.classList.remove('hidden');
-    btnOk.onclick = hideModal;
-  } else if (type === 'confirm') {
-    btnYes.classList.remove('hidden');
-    btnNo.classList.remove('hidden');
-    btnYes.onclick = () => {
-      hideModal();
-      if (onConfirm) onConfirm();
-    };
-    btnNo.onclick = hideModal;
-  }
-
-  backdrop.classList.remove('hidden');
-  modal.classList.remove('hidden');
-}
-
-function hideModal() {
-  document.getElementById('modal-backdrop').classList.add('hidden');
-  document.getElementById('modal-window').classList.add('hidden');
-}
-
-document.getElementById('modal-ok-button').addEventListener('click', hideModal);
-
 const machinesDiv = document.getElementById('machines');
 
-
 function checkUnlockedMachines() {
+  let newMachines = [];
+
   machines.forEach(machine => {
     if (game.currentFloor >= machine.unlockedAtFloor) {
       const existingMachine = game.machines.find(m => m.id === machine.id);
@@ -57,15 +17,16 @@ function checkUnlockedMachines() {
           count: 0,
           upgradeLevel: 0
         });
-        if (!game.shownMachineAlerts.includes(machine.id)) {
-          showModal(`🎉 Odblokowano nową maszynę: ${machine.name}`);
-          game.shownMachineAlerts.push(machine.id);
+        // push new machines into new floors and show modal
+          newMachines.push(machine.name);
+          // game.shownMachineAlerts.push(machine.id);
           saveGame();
-        }
         renderMachines();
       }
     }
   });
+  // return information with new machines to floors
+  return newMachines;
 }
 
 
@@ -117,7 +78,7 @@ function renderMachines() {
         renderMachines();
         saveGame();
       } else {
-        alert('Masz za mało klików!');
+        showInsufficientClicksModal();
       }
     };
 

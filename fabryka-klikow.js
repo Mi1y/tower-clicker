@@ -1,45 +1,3 @@
-function showModal(message, type = 'alert', onConfirm = null) {
-  const backdrop = document.getElementById('modal-backdrop');
-  const modal = document.getElementById('modal-window');
-  const content = document.getElementById('modal-content');
-
-  // Przyciski
-  const btnOk = document.getElementById('modal-ok-button');
-  const btnYes = document.getElementById('modal-confirm-yes');
-  const btnNo = document.getElementById('modal-confirm-no');
-
-  content.textContent = message;
-
-  // Reset visibility
-  btnOk.classList.add('hidden');
-  btnYes.classList.add('hidden');
-  btnNo.classList.add('hidden');
-
-  if (type === 'alert') {
-    btnOk.classList.remove('hidden');
-    btnOk.onclick = hideModal;
-  } else if (type === 'confirm') {
-    btnYes.classList.remove('hidden');
-    btnNo.classList.remove('hidden');
-    btnYes.onclick = () => {
-      hideModal();
-      if (onConfirm) onConfirm();
-    };
-    btnNo.onclick = hideModal;
-  }
-
-  backdrop.classList.remove('hidden');
-  modal.classList.remove('hidden');
-}
-
-function hideModal() {
-  document.getElementById('modal-backdrop').classList.add('hidden');
-  document.getElementById('modal-window').classList.add('hidden');
-}
-
-document.getElementById('modal-ok-button').addEventListener('click', hideModal);
-
-
 let game = {
   clicks: 0,
   machines: [],
@@ -48,10 +6,9 @@ let game = {
   defeatedBosses: [],
   currentBoss: null,
 
-  shownFloorAlerts: [],
-  shownMachineAlerts: [],
+  // shownFloorAlerts: [],
+  // shownMachineAlerts: [],
 };
-
 
 function saveGame() {
   localStorage.setItem('clickFactoryIdleGame', JSON.stringify(game));
@@ -67,8 +24,8 @@ function loadGame() {
     game.unlockedFloors = loaded.unlockedFloors || [1];
     game.defeatedBosses = loaded.defeatedBosses || [];
     game.currentBoss = loaded.currentBoss || null;
-    game.shownFloorAlerts = loaded.shownFloorAlerts || [];
-    game.shownMachineAlerts = loaded.shownMachineAlerts || [];
+    // game.shownFloorAlerts = loaded.shownFloorAlerts || [];
+    // game.shownMachineAlerts = loaded.shownMachineAlerts || [];
 
     if (loaded.machines && loaded.machines.length > 0) {
       game.machines = loaded.machines.map(machine => ({
@@ -103,11 +60,8 @@ function exportJson() {
   a.click();
 
   URL.revokeObjectURL(url);
-  showModal('Gra została wyeksportowana!');
+  showExportSuccessModal();
 }
-
-
-
 
 function importJson(event) {
   const file = event.target.files[0];
@@ -155,16 +109,15 @@ function importJson(event) {
       renderBossSection();
       saveGame();
 
-      showModal('Gra została pomyślnie zaimportowana!');
-
+      showImportSuccessModal();
     } catch (error) {
-      showModal('Błąd podczas importu: ' + error.message);
+      showImportErrorModal(error.message);
       console.error('Import error:', error);
     }
   };
 
   reader.onerror = () => {
-    showModal('Błąd podczas czytania pliku!');
+    showFileReadErrorModal();
   };
 
   reader.readAsText(file);
@@ -173,10 +126,8 @@ function importJson(event) {
   event.target.value = '';
 }
 
-
-
 function resetGame() {
-  showModal('Czy na pewno chcesz zresetować grę?', 'confirm', () => {
+  showResetConfirmModal(() => {
     game = {
       clicks: 0,
       machines: [],
@@ -184,8 +135,8 @@ function resetGame() {
       unlockedFloors: [1],
       defeatedBosses: [],
       currentBoss: null,
-      shownFloorAlerts: [],
-      shownMachineAlerts: []
+      // shownFloorAlerts: [],
+      // shownMachineAlerts: []
     };
     saveGame();
     updateClicks();
