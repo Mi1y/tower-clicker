@@ -1,6 +1,47 @@
+function showModal(message, type = 'alert', onConfirm = null) {
+  const backdrop = document.getElementById('modal-backdrop');
+  const modal = document.getElementById('modal-window');
+  const content = document.getElementById('modal-content');
+
+  // Przyciski
+  const btnOk = document.getElementById('modal-ok-button');
+  const btnYes = document.getElementById('modal-confirm-yes');
+  const btnNo = document.getElementById('modal-confirm-no');
+
+  content.textContent = message;
+
+  // Reset visibility
+  btnOk.classList.add('hidden');
+  btnYes.classList.add('hidden');
+  btnNo.classList.add('hidden');
+
+  if (type === 'alert') {
+    btnOk.classList.remove('hidden');
+    btnOk.onclick = hideModal;
+  } else if (type === 'confirm') {
+    btnYes.classList.remove('hidden');
+    btnNo.classList.remove('hidden');
+    btnYes.onclick = () => {
+      hideModal();
+      if (onConfirm) onConfirm();
+    };
+    btnNo.onclick = hideModal;
+  }
+
+  backdrop.classList.remove('hidden');
+  modal.classList.remove('hidden');
+}
+
+function hideModal() {
+  document.getElementById('modal-backdrop').classList.add('hidden');
+  document.getElementById('modal-window').classList.add('hidden');
+}
+
+document.getElementById('modal-ok-button').addEventListener('click', hideModal);
+
 function checkUnlockedFloors() {
 
-    const floor = floors.find(f => f.id === game.currentFloor);
+  const floor = floors.find(f => f.id === game.currentFloor);
   if (
     floor &&
     !game.defeatedBosses.includes(game.currentFloor) &&
@@ -27,7 +68,7 @@ function checkUnlockedFloors() {
     if (!game.unlockedFloors.includes(nextFloor)) {
       game.unlockedFloors.push(nextFloor);
       if (!game.shownFloorAlerts.includes(nextFloor)) {
-        // alert(`🏢 Odblokowano nowe piętro: ${floors.find(f => f.id === nextFloor).name}`);
+        showModal(`🏢 Odblokowano nowe piętro: ${floors.find(f => f.id === nextFloor).name}`);
         game.shownFloorAlerts.push(nextFloor);
         saveGame();
       }
@@ -55,7 +96,7 @@ function startBossFight(floorId) {
 
 function attackBoss() {
   if (!game.currentBoss) return;
-  
+
   const cost = game.currentBoss.hp;
 
   if (game.clicks >= cost) {
@@ -63,7 +104,7 @@ function attackBoss() {
     game.clicks += game.currentBoss.reward;
 
     // alert(`🎊 Pokonano ${game.currentBoss.name}! Nagroda: ${game.currentBoss.reward} klików`);
-    
+
     game.defeatedBosses.push(game.currentBoss.floorId);
     game.currentBoss = null;
 
@@ -71,27 +112,27 @@ function attackBoss() {
     checkUnlockedFloors();
     renderBossSection();
   } else {
-    alert(`Potrzebujesz ${cost} klików, a masz tylko ${Math.floor(game.clicks)}!`);
+    showModal(`Potrzebujesz ${cost} klików, a masz tylko ${Math.floor(game.clicks)}!`);
   }
   saveGame();
 }
 
 function renderBossSection() {
   let bossDiv = document.getElementById('floors');
-  
+
   if (!bossDiv) {
     bossDiv = document.createElement('div');
     bossDiv.id = 'floors';
     document.getElementById('content').insertBefore(bossDiv, document.getElementById('machines'));
   }
-  
+
   if (game.currentBoss) {
     const hpPercent = (game.currentBoss.hp / game.currentBoss.maxHp) * 100;
     bossDiv.innerHTML = `
       <div class="boss-fight">
-        <h2>⚔️ ${game.currentBoss.floorName} ⚔️</h2>
+        <h2>${game.currentBoss.floorName}</h2>
         <div class="boss-info">
-          <div class="boss-name">${game.currentBoss.name}</div>
+          <div class="boss-name">⚔️ ${game.currentBoss.name} ⚔️</div>
           <div class="boss-hp-bar">
             <div class="hp-fill" style="width: ${hpPercent}%"></div>
           </div>

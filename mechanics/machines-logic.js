@@ -1,3 +1,44 @@
+function showModal(message, type = 'alert', onConfirm = null) {
+  const backdrop = document.getElementById('modal-backdrop');
+  const modal = document.getElementById('modal-window');
+  const content = document.getElementById('modal-content');
+
+  // Przyciski
+  const btnOk = document.getElementById('modal-ok-button');
+  const btnYes = document.getElementById('modal-confirm-yes');
+  const btnNo = document.getElementById('modal-confirm-no');
+
+  content.textContent = message;
+
+  // Reset visibility
+  btnOk.classList.add('hidden');
+  btnYes.classList.add('hidden');
+  btnNo.classList.add('hidden');
+
+  if (type === 'alert') {
+    btnOk.classList.remove('hidden');
+    btnOk.onclick = hideModal;
+  } else if (type === 'confirm') {
+    btnYes.classList.remove('hidden');
+    btnNo.classList.remove('hidden');
+    btnYes.onclick = () => {
+      hideModal();
+      if (onConfirm) onConfirm();
+    };
+    btnNo.onclick = hideModal;
+  }
+
+  backdrop.classList.remove('hidden');
+  modal.classList.remove('hidden');
+}
+
+function hideModal() {
+  document.getElementById('modal-backdrop').classList.add('hidden');
+  document.getElementById('modal-window').classList.add('hidden');
+}
+
+document.getElementById('modal-ok-button').addEventListener('click', hideModal);
+
 const machinesDiv = document.getElementById('machines');
 
 
@@ -17,7 +58,7 @@ function checkUnlockedMachines() {
           upgradeLevel: 0
         });
         if (!game.shownMachineAlerts.includes(machine.id)) {
-          alert(`🎉 Odblokowano nową maszynę: ${machine.name}`);
+          showModal(`🎉 Odblokowano nową maszynę: ${machine.name}`);
           game.shownMachineAlerts.push(machine.id);
           saveGame();
         }
@@ -42,7 +83,7 @@ function renderMachines() {
   // czyści poprzednie maszyny przed upgrade
   machinesDiv.innerHTML = '';
 
-    game.machines.forEach(machine => {
+  game.machines.forEach(machine => {
     const machineDiv = document.createElement('div');
     machineDiv.className = 'machine';
 

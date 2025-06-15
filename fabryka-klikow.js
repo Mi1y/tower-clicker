@@ -1,3 +1,45 @@
+function showModal(message, type = 'alert', onConfirm = null) {
+  const backdrop = document.getElementById('modal-backdrop');
+  const modal = document.getElementById('modal-window');
+  const content = document.getElementById('modal-content');
+
+  // Przyciski
+  const btnOk = document.getElementById('modal-ok-button');
+  const btnYes = document.getElementById('modal-confirm-yes');
+  const btnNo = document.getElementById('modal-confirm-no');
+
+  content.textContent = message;
+
+  // Reset visibility
+  btnOk.classList.add('hidden');
+  btnYes.classList.add('hidden');
+  btnNo.classList.add('hidden');
+
+  if (type === 'alert') {
+    btnOk.classList.remove('hidden');
+    btnOk.onclick = hideModal;
+  } else if (type === 'confirm') {
+    btnYes.classList.remove('hidden');
+    btnNo.classList.remove('hidden');
+    btnYes.onclick = () => {
+      hideModal();
+      if (onConfirm) onConfirm();
+    };
+    btnNo.onclick = hideModal;
+  }
+
+  backdrop.classList.remove('hidden');
+  modal.classList.remove('hidden');
+}
+
+function hideModal() {
+  document.getElementById('modal-backdrop').classList.add('hidden');
+  document.getElementById('modal-window').classList.add('hidden');
+}
+
+document.getElementById('modal-ok-button').addEventListener('click', hideModal);
+
+
 let game = {
   clicks: 0,
   machines: [],
@@ -6,8 +48,8 @@ let game = {
   defeatedBosses: [],
   currentBoss: null,
 
-  shownFloorAlerts:[],
-  shownMachineAlerts:[],
+  shownFloorAlerts: [],
+  shownMachineAlerts: [],
 };
 
 
@@ -44,7 +86,7 @@ function loadGame() {
     }
   }
 
-  
+
   checkUnlockedMachines();
   checkUnlockedFloors();
 }
@@ -61,7 +103,7 @@ function exportJson() {
   a.click();
 
   URL.revokeObjectURL(url);
-  alert('Gra została wyeksportowana!');
+  showModal('Gra została wyeksportowana!');
 }
 
 
@@ -76,10 +118,10 @@ function importJson(event) {
   reader.onload = (e) => {
     try {
       const importedGame = JSON.parse(e.target.result);
-      
-      if (!importedGame.hasOwnProperty('clicks') || 
-          !importedGame.hasOwnProperty('machines') ||
-          !Array.isArray(importedGame.machines)) {
+
+      if (!importedGame.hasOwnProperty('clicks') ||
+        !importedGame.hasOwnProperty('machines') ||
+        !Array.isArray(importedGame.machines)) {
         throw new Error('Nieprawidłowy format pliku!');
       }
 
@@ -88,7 +130,7 @@ function importJson(event) {
       game.unlockedFloors = importedGame.unlockedFloors || [1];
       game.defeatedBosses = importedGame.defeatedBosses || [];
       game.currentBoss = importedGame.currentBoss || null;
-      
+
       if (importedGame.machines && importedGame.machines.length > 0) {
         game.machines = importedGame.machines.map(machine => ({
           id: machine.id || 'robot',
@@ -100,7 +142,7 @@ function importJson(event) {
           count: machine.count || 0,
           upgradeLevel: machine.upgradeLevel || 0
         }));
-        
+
         game.machines.forEach(machine => {
           machine.cps = machine.baseCPS * (1 + 0.5 * machine.upgradeLevel);
         });
@@ -112,21 +154,21 @@ function importJson(event) {
       renderMachines();
       renderBossSection();
       saveGame();
-      
-      alert('Gra została pomyślnie zaimportowana!');
-      
+
+      showModal('Gra została pomyślnie zaimportowana!');
+
     } catch (error) {
-      alert('Błąd podczas importu: ' + error.message);
+      showModal('Błąd podczas importu: ' + error.message);
       console.error('Import error:', error);
     }
   };
-  
+
   reader.onerror = () => {
-    alert('Błąd podczas czytania pliku!');
+    showModal('Błąd podczas czytania pliku!');
   };
-  
+
   reader.readAsText(file);
-  
+
   // wyczysc input po uzyciu importu
   event.target.value = '';
 }
@@ -134,7 +176,7 @@ function importJson(event) {
 
 
 function resetGame() {
-  if (confirm('Czy na pewno chcesz zresetować grę?')) {
+  showModal('Czy na pewno chcesz zresetować grę?', 'confirm', () => {
     game = {
       clicks: 0,
       machines: [],
@@ -142,7 +184,6 @@ function resetGame() {
       unlockedFloors: [1],
       defeatedBosses: [],
       currentBoss: null,
-
       shownFloorAlerts: [],
       shownMachineAlerts: []
     };
@@ -152,7 +193,7 @@ function resetGame() {
     checkUnlockedMachines();
     renderMachines();
     renderBossSection();
-  }
+  });
 }
 
 
@@ -167,3 +208,5 @@ setInterval(() => {
   collectClicksPerSecond();
   saveGame();
 }, 100);
+
+

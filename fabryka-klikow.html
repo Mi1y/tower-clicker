@@ -8,7 +8,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/public/logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
   <script defer src="data/machines.js"></script>
   <script defer src="data/floors.js"></script>
   <script defer src="mechanics/clicks-logic.js"></script>
@@ -22,12 +22,13 @@
 
     <h1>🤖 Fabryka Klików 🤖</h1>
 
-    <div id="floors"></div>
     
     <div id="clicks" title="Kliksy">Kliksy: 0</div>
-
+    
     <button id="click-btn" aria-label="Kliknij, aby zdobyć kliksy">Zbieraj kliksy</button>
-
+    
+    <div id="floors"></div>
+    
     <div id="machines"></div>
 
     <div id="footer">
@@ -35,10 +36,22 @@
       <button onclick="resetGame()">Resetuj grę</button>
       <button onclick="exportJson()">Eksportuj grę</button>
       <div id="footer-import">
-        <label for="importFile">Importuj grę:</label>    
+        <label for="importFile">Importuj grę</label>    
         <input type="file" id="importFile" accept=".json" onchange="importJson(event)" />
       </div>
     </div>
+
+    <div id="modal-backdrop" class="hidden">
+      <div id="modal-window" class="hidden">
+        <div id="modal-content"></div>
+        <div id="modal-buttons">
+          <button id="modal-ok-button" class="modal-button hidden">Zamknij</button>
+          <button id="modal-confirm-yes" class="modal-button hidden">Tak</button>
+          <button id="modal-confirm-no" class="modal-button hidden">Nie</button>
+        </div>
+      </div>
+    </div>
+    
 
   </div>
 
