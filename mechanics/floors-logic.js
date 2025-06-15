@@ -20,8 +20,6 @@ function checkUnlockedFloors() {
     const nextFloor = game.currentFloor + 1;
     const nextFloorData = floors.find(f => f.id === nextFloor);
     
-    // if (!game.unlockedFloors.includes(nextFloor) && !game.shownFloorAlerts.includes(nextFloor)) {
-    
     // modal shows new mechanines if there is any
     if (!game.unlockedFloors.includes(nextFloor)) {
       const newMachines = checkUnlockedMachines();
@@ -29,7 +27,6 @@ function checkUnlockedFloors() {
       showFloorUnlockedModal(nextFloorData.name, newMachines);
       
       game.unlockedFloors.push(nextFloor);
-      // game.shownFloorAlerts.push(nextFloor);
       saveGame();
     }
     

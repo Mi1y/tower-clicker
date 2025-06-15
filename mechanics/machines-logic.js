@@ -19,7 +19,6 @@ function checkUnlockedMachines() {
         });
         // push new machines into new floors and show modal
           newMachines.push(machine.name);
-          // game.shownMachineAlerts.push(machine.id);
           saveGame();
         renderMachines();
       }

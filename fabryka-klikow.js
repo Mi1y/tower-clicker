@@ -5,9 +5,6 @@ let game = {
   unlockedFloors: [1],
   defeatedBosses: [],
   currentBoss: null,
-
-  // shownFloorAlerts: [],
-  // shownMachineAlerts: [],
 };
 
 function saveGame() {
@@ -24,8 +21,6 @@ function loadGame() {
     game.unlockedFloors = loaded.unlockedFloors || [1];
     game.defeatedBosses = loaded.defeatedBosses || [];
     game.currentBoss = loaded.currentBoss || null;
-    // game.shownFloorAlerts = loaded.shownFloorAlerts || [];
-    // game.shownMachineAlerts = loaded.shownMachineAlerts || [];
 
     if (loaded.machines && loaded.machines.length > 0) {
       game.machines = loaded.machines.map(machine => ({
@@ -135,8 +130,6 @@ function resetGame() {
       unlockedFloors: [1],
       defeatedBosses: [],
       currentBoss: null,
-      // shownFloorAlerts: [],
-      // shownMachineAlerts: []
     };
     saveGame();
     updateClicks();
