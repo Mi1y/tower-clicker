@@ -40,7 +40,6 @@ function hideModal() {
 document.getElementById('modal-ok-button').addEventListener('click', hideModal);
 
 function checkUnlockedFloors() {
-
   const floor = floors.find(f => f.id === game.currentFloor);
   if (
     floor &&
@@ -68,13 +67,12 @@ function checkUnlockedFloors() {
     if (!game.unlockedFloors.includes(nextFloor)) {
       game.unlockedFloors.push(nextFloor);
       if (!game.shownFloorAlerts.includes(nextFloor)) {
-        showModal(`🏢 Odblokowano nowe piętro: ${floors.find(f => f.id === nextFloor).name}`);
+        showModal(`🏢 Odblokowano: ${floors.find(f => f.id === nextFloor).name}`);
         game.shownFloorAlerts.push(nextFloor);
-        saveGame();
+        saveGameSilent(); // zamiast saveGame()
       }
     }
     game.currentFloor = nextFloor;
-    // alert(`⬆️ Przeniesiono na ${floors.find(f => f.id === nextFloor).name}`);
     checkUnlockedMachines();
     checkUnlockedFloors();
   }
@@ -103,18 +101,16 @@ function attackBoss() {
     game.clicks -= cost;
     game.clicks += game.currentBoss.reward;
 
-    // alert(`🎊 Pokonano ${game.currentBoss.name}! Nagroda: ${game.currentBoss.reward} klików`);
-
     game.defeatedBosses.push(game.currentBoss.floorId);
     game.currentBoss = null;
 
     updateClicks();
     checkUnlockedFloors();
     renderBossSection();
+    saveGameSilent(); // zamiast saveGame()
   } else {
     showModal(`Potrzebujesz ${cost} klików, a masz tylko ${Math.floor(game.clicks)}!`);
   }
-  saveGame();
 }
 
 function renderBossSection() {

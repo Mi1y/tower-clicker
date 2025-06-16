@@ -1,7 +1,6 @@
 const clicksDisplay = document.getElementById('clicks');
 const clickBtn = document.getElementById('click-btn');
 
-
 function updateClicks() {
   clicksDisplay.textContent = `Kliksy: ${Math.floor(game.clicks)}`;
 }
@@ -17,9 +16,8 @@ clickBtn.addEventListener('click', () => {
   animateClicks();
   checkUnlockedFloors();
   renderBossSection();
-  saveGame();
+  saveGameSilent(); // zamiast saveGame()
 });
-
 
 function collectClicksPerSecond() {
   let totalCPS = 0;

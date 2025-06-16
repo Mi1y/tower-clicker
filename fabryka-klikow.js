@@ -1,16 +1,13 @@
+// Modal
 function showModal(message, type = 'alert', onConfirm = null) {
   const backdrop = document.getElementById('modal-backdrop');
   const modal = document.getElementById('modal-window');
   const content = document.getElementById('modal-content');
-
-  // Przyciski
   const btnOk = document.getElementById('modal-ok-button');
   const btnYes = document.getElementById('modal-confirm-yes');
   const btnNo = document.getElementById('modal-confirm-no');
 
   content.textContent = message;
-
-  // Reset visibility
   btnOk.classList.add('hidden');
   btnYes.classList.add('hidden');
   btnNo.classList.add('hidden');
@@ -37,41 +34,53 @@ function hideModal() {
   document.getElementById('modal-window').classList.add('hidden');
 }
 
-document.getElementById('modal-ok-button').addEventListener('click', hideModal);
-
-
-let game = {
-  clicks: 0,
-  machines: [],
-  currentFloor: 1,
-  unlockedFloors: [1],
-  defeatedBosses: [],
-  currentBoss: null,
-
-  shownFloorAlerts: [],
-  shownMachineAlerts: [],
-};
-
-
-function saveGame() {
-  localStorage.setItem('clickFactoryIdleGame', JSON.stringify(game));
+// Pełny save z powiadomieniem
+async function saveGameToServer() {
+  try {
+    const res = await fetch('http://localhost:3000/api/game', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(game)
+    });
+    if (!res.ok) throw new Error('Status ' + res.status);
+    showModal('Stan gry zapisany na serwerze!');
+  } catch (err) {
+    console.error('Błąd zapisu na serwerze:', err);
+    showModal('Błąd zapisu na serwerze');
+  }
 }
 
-function loadGame() {
-  const saved = localStorage.getItem('clickFactoryIdleGame');
-  if (saved) {
-    const loaded = JSON.parse(saved);
+// Cicha wersja do autosave
+async function saveGameSilent() {
+  try {
+    const res = await fetch('http://localhost:3000/api/game', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(game)
+    });
+    if (!res.ok) throw new Error('Status ' + res.status);
+    // nie pokazujemy nic dla użytkownika
+  } catch (err) {
+    console.error('Błąd zapisu na serwerze (silent):', err);
+    // brak modala
+  }
+}
 
-    game.clicks = loaded.clicks || 0;
-    game.currentFloor = loaded.currentFloor || 1;
-    game.unlockedFloors = loaded.unlockedFloors || [1];
-    game.defeatedBosses = loaded.defeatedBosses || [];
-    game.currentBoss = loaded.currentBoss || null;
-    game.shownFloorAlerts = loaded.shownFloorAlerts || [];
-    game.shownMachineAlerts = loaded.shownMachineAlerts || [];
-
-    if (loaded.machines && loaded.machines.length > 0) {
-      game.machines = loaded.machines.map(machine => ({
+// Load z serwera
+async function loadGameFromServer() {
+  try {
+    const res = await fetch('http://localhost:3000/api/game');
+    if (!res.ok) throw new Error('Status ' + res.status);
+    const data = await res.json();
+    game.clicks = typeof data.clicks === 'number' ? data.clicks : 0;
+    game.currentFloor = typeof data.currentFloor === 'number' ? data.currentFloor : 1;
+    game.unlockedFloors = Array.isArray(data.unlockedFloors) ? data.unlockedFloors : [1];
+    game.defeatedBosses = Array.isArray(data.defeatedBosses) ? data.defeatedBosses : [];
+    game.currentBoss = typeof data.currentBoss === 'string' ? data.currentBoss : null;
+    game.shownFloorAlerts = Array.isArray(data.shownFloorAlerts) ? data.shownFloorAlerts : [];
+    game.shownMachineAlerts = Array.isArray(data.shownMachineAlerts) ? data.shownMachineAlerts : [];
+    if (Array.isArray(data.machines)) {
+      game.machines = data.machines.map(machine => ({
         id: machine.id,
         name: machine.name,
         baseCost: machine.baseCost,
@@ -84,97 +93,32 @@ function loadGame() {
     } else {
       game.machines = [];
     }
+    checkUnlockedMachines();
+    checkUnlockedFloors();
+    updateClicks();
+    renderMachines();
+    renderBossSection();
+    console.log('Stan gry wczytany z serwera.');
+  } catch (err) {
+    console.error('Błąd ładowania stanu gry z serwera:', err);
+    showModal('Nie udało się wczytać stanu z serwera.');
+    // Jeśli chcesz fallback, możesz tu wywołać lokalne loadGame()
   }
-
-
-  checkUnlockedMachines();
-  checkUnlockedFloors();
 }
 
+// Obiekt gry
+let game = {
+  clicks: 0,
+  machines: [],
+  currentFloor: 1,
+  unlockedFloors: [1],
+  defeatedBosses: [],
+  currentBoss: null,
+  shownFloorAlerts: [],
+  shownMachineAlerts: [],
+};
 
-function exportJson() {
-  const json = JSON.stringify(game, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'fabryka-klikow-save.json';
-  a.click();
-
-  URL.revokeObjectURL(url);
-  showModal('Gra została wyeksportowana!');
-}
-
-
-
-
-function importJson(event) {
-  const file = event.target.files[0];
-
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const importedGame = JSON.parse(e.target.result);
-
-      if (!importedGame.hasOwnProperty('clicks') ||
-        !importedGame.hasOwnProperty('machines') ||
-        !Array.isArray(importedGame.machines)) {
-        throw new Error('Nieprawidłowy format pliku!');
-      }
-
-      game.clicks = importedGame.clicks || 0;
-      game.currentFloor = importedGame.currentFloor || 1;
-      game.unlockedFloors = importedGame.unlockedFloors || [1];
-      game.defeatedBosses = importedGame.defeatedBosses || [];
-      game.currentBoss = importedGame.currentBoss || null;
-
-      if (importedGame.machines && importedGame.machines.length > 0) {
-        game.machines = importedGame.machines.map(machine => ({
-          id: machine.id || 'robot',
-          name: machine.name || '🤖 Robot Kliker',
-          baseCost: machine.baseCost || 15,
-          cost: machine.cost || machine.baseCost || 15,
-          baseCPS: machine.baseCPS || 1,
-          cps: machine.cps || machine.baseCPS || 1,
-          count: machine.count || 0,
-          upgradeLevel: machine.upgradeLevel || 0
-        }));
-
-        game.machines.forEach(machine => {
-          machine.cps = machine.baseCPS * (1 + 0.5 * machine.upgradeLevel);
-        });
-      }
-
-      // initialize
-      checkUnlockedMachines();
-      updateClicks();
-      renderMachines();
-      renderBossSection();
-      saveGame();
-
-      showModal('Gra została pomyślnie zaimportowana!');
-
-    } catch (error) {
-      showModal('Błąd podczas importu: ' + error.message);
-      console.error('Import error:', error);
-    }
-  };
-
-  reader.onerror = () => {
-    showModal('Błąd podczas czytania pliku!');
-  };
-
-  reader.readAsText(file);
-
-  // wyczysc input po uzyciu importu
-  event.target.value = '';
-}
-
-
-
+// Reset gry
 function resetGame() {
   showModal('Czy na pewno chcesz zresetować grę?', 'confirm', () => {
     game = {
@@ -187,26 +131,23 @@ function resetGame() {
       shownFloorAlerts: [],
       shownMachineAlerts: []
     };
-    saveGame();
-    updateClicks();
-    checkUnlockedFloors();
     checkUnlockedMachines();
+    checkUnlockedFloors();
+    updateClicks();
     renderMachines();
     renderBossSection();
+    saveGameToServer(); // zamiast saveGame()
   });
 }
 
+// Inicjalizacja
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('modal-ok-button').addEventListener('click', hideModal);
+  loadGameFromServer();
+});
 
-// initialize
-loadGame();
-updateClicks();
-renderMachines();
-renderBossSection();
-
-
+// Autosave co 5s, cicho
 setInterval(() => {
   collectClicksPerSecond();
-  saveGame();
-}, 100);
-
-
+  saveGameSilent();
+}, 5000);
