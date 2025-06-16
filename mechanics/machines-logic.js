@@ -75,7 +75,7 @@ function renderMachines() {
         machine.count++;
         updateClicks();
         renderMachines();
-        saveGameToServer();
+        // saveGameToServer();
       } else {
         showInsufficientClicksModal();
       }
@@ -90,7 +90,7 @@ function renderMachines() {
         machine.cps = machine.baseCPS * (1 + 0.5 * machine.upgradeLevel);
         updateClicks();
         renderMachines();
-        saveGameToServer();
+        // saveGameToServer();
       }
     };
   });
