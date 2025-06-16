@@ -220,8 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loadGameFromServer();
 });
 
+// Zbieranie klików co sekundę
+setInterval(collectClicksPerSecond, 100);
+
 // Autosave co 5s, cicho
-setInterval(() => {
-  collectClicksPerSecond();
-  saveGameSilent();
-}, 5000);
+setInterval(saveGameSilent, 5000);
