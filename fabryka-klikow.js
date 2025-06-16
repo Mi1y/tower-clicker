@@ -118,9 +118,85 @@ let game = {
   shownMachineAlerts: [],
 };
 
-// Reset gry
+function exportJson() {
+  const json = JSON.stringify(game, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'fabryka-klikow-save.json';
+  a.click();
+
+  URL.revokeObjectURL(url);
+  showExportSuccessModal();
+}
+
+function importJson(event) {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const importedGame = JSON.parse(e.target.result);
+
+      if (!importedGame.hasOwnProperty('clicks') ||
+        !importedGame.hasOwnProperty('machines') ||
+        !Array.isArray(importedGame.machines)) {
+        throw new Error('Nieprawidłowy format pliku!');
+      }
+
+      game.clicks = importedGame.clicks || 0;
+      game.currentFloor = importedGame.currentFloor || 1;
+      game.unlockedFloors = importedGame.unlockedFloors || [1];
+      game.defeatedBosses = importedGame.defeatedBosses || [];
+      game.currentBoss = importedGame.currentBoss || null;
+
+      if (importedGame.machines && importedGame.machines.length > 0) {
+        game.machines = importedGame.machines.map(machine => ({
+          id: machine.id || 'robot',
+          name: machine.name || '🤖 Robot Kliker',
+          baseCost: machine.baseCost || 15,
+          cost: machine.cost || machine.baseCost || 15,
+          baseCPS: machine.baseCPS || 1,
+          cps: machine.cps || machine.baseCPS || 1,
+          count: machine.count || 0,
+          upgradeLevel: machine.upgradeLevel || 0
+        }));
+
+        game.machines.forEach(machine => {
+          machine.cps = machine.baseCPS * (1 + 0.5 * machine.upgradeLevel);
+        });
+      }
+
+      // initialize
+      checkUnlockedMachines();
+      updateClicks();
+      renderMachines();
+      renderBossSection();
+      saveGameToServer();
+
+      showImportSuccessModal();
+    } catch (error) {
+      showImportErrorModal(error.message);
+      console.error('Import error:', error);
+    }
+  };
+
+  reader.onerror = () => {
+    showFileReadErrorModal();
+  };
+
+  reader.readAsText(file);
+
+  // wyczysc input po uzyciu importu
+  event.target.value = '';
+}
+
 function resetGame() {
-  showModal('Czy na pewno chcesz zresetować grę?', 'confirm', () => {
+  showResetConfirmModal(() => {
     game = {
       clicks: 0,
       machines: [],
@@ -128,8 +204,6 @@ function resetGame() {
       unlockedFloors: [1],
       defeatedBosses: [],
       currentBoss: null,
-      shownFloorAlerts: [],
-      shownMachineAlerts: []
     };
     checkUnlockedMachines();
     checkUnlockedFloors();

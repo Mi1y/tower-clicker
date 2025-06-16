@@ -1,51 +1,9 @@
-function showModal(message, type = 'alert', onConfirm = null) {
-  const backdrop = document.getElementById('modal-backdrop');
-  const modal = document.getElementById('modal-window');
-  const content = document.getElementById('modal-content');
-
-  // Przyciski
-  const btnOk = document.getElementById('modal-ok-button');
-  const btnYes = document.getElementById('modal-confirm-yes');
-  const btnNo = document.getElementById('modal-confirm-no');
-
-  content.textContent = message;
-
-  // Reset visibility
-  btnOk.classList.add('hidden');
-  btnYes.classList.add('hidden');
-  btnNo.classList.add('hidden');
-
-  if (type === 'alert') {
-    btnOk.classList.remove('hidden');
-    btnOk.onclick = hideModal;
-  } else if (type === 'confirm') {
-    btnYes.classList.remove('hidden');
-    btnNo.classList.remove('hidden');
-    btnYes.onclick = () => {
-      hideModal();
-      if (onConfirm) onConfirm();
-    };
-    btnNo.onclick = hideModal;
-  }
-
-  backdrop.classList.remove('hidden');
-  modal.classList.remove('hidden');
-}
-
-function hideModal() {
-  document.getElementById('modal-backdrop').classList.add('hidden');
-  document.getElementById('modal-window').classList.add('hidden');
-}
-
-document.getElementById('modal-ok-button').addEventListener('click', hideModal);
-
 function checkUnlockedFloors() {
   const floor = floors.find(f => f.id === game.currentFloor);
-  if (
-    floor &&
-    !game.defeatedBosses.includes(game.currentFloor) &&
-    !game.currentBoss
-  ) {
+  if (!floor) return;
+
+  // Spawn boss if not defeated and no current boss
+  if (!game.defeatedBosses.includes(game.currentFloor) && !game.currentBoss) {
     game.currentBoss = {
       floorId: floor.id,
       floorName: floor.name,
@@ -55,16 +13,19 @@ function checkUnlockedFloors() {
       reward: floor.boss.reward
     };
     renderBossSection();
+    return;
   }
 
-  const currentFloorObj = floors.find(f => f.id === game.currentFloor);
-  if (
-    currentFloorObj &&
-    game.defeatedBosses.includes(game.currentFloor) &&
-    game.currentFloor < floors.length
-  ) {
+  if (game.defeatedBosses.includes(game.currentFloor) && game.currentFloor < floors.length) {
     const nextFloor = game.currentFloor + 1;
+    const nextFloorData = floors.find(f => f.id === nextFloor);
+    
+    // modal shows new mechanines if there is any
     if (!game.unlockedFloors.includes(nextFloor)) {
+      const newMachines = checkUnlockedMachines();
+      
+      showFloorUnlockedModal(nextFloorData.name, newMachines);
+      
       game.unlockedFloors.push(nextFloor);
       if (!game.shownFloorAlerts.includes(nextFloor)) {
         showModal(`🏢 Odblokowano: ${floors.find(f => f.id === nextFloor).name}`);
@@ -72,6 +33,7 @@ function checkUnlockedFloors() {
         saveGameSilent(); // zamiast saveGame()
       }
     }
+    
     game.currentFloor = nextFloor;
     checkUnlockedMachines();
     checkUnlockedFloors();
@@ -96,7 +58,6 @@ function attackBoss() {
   if (!game.currentBoss) return;
 
   const cost = game.currentBoss.hp;
-
   if (game.clicks >= cost) {
     game.clicks -= cost;
     game.clicks += game.currentBoss.reward;
@@ -109,7 +70,7 @@ function attackBoss() {
     renderBossSection();
     saveGameSilent(); // zamiast saveGame()
   } else {
-    showModal(`Potrzebujesz ${cost} klików, a masz tylko ${Math.floor(game.clicks)}!`);
+    showBossAttackErrorModal(cost, game.clicks);
   }
 }
 
