@@ -9,7 +9,7 @@ async function saveGameToServer() {
     showSaveGameSuccessModal();
   } catch (err) {
     console.error('Błąd zapisu na serwerze:', err);
-    showSaveGameErrorModal(err.message);
+    showSaveGameErrorModal();
   }
 }
 
@@ -58,7 +58,7 @@ async function loadGameFromServer() {
     showLoadSuccessModal();
   } catch (err) {
     console.error('Błąd ładowania stanu gry z serwera:', err);
-    showLoadErrorModal(err.message);
+    showLoadErrorModal();
   }
 }
 
@@ -133,7 +133,7 @@ function importJson(event) {
 
       showImportSuccessModal();
     } catch (error) {
-      showImportErrorModal(error.message);
+      showImportErrorModal();
       console.error('Import error:', error);
     }
   };

@@ -66,8 +66,8 @@ function showImportSuccessModal() {
   showModal('Gra została pomyślnie zaimportowana!');
 }
 
-function showImportErrorModal(errorMessage) {
-  showModal('Błąd podczas importu: ' + errorMessage);
+function showImportErrorModal() {
+  showModal('Błąd podczas importu: ');
 }
 
 function showFileReadErrorModal() {
@@ -85,14 +85,14 @@ function showInsufficientClicksModal() {
 function showSaveGameSuccessModal() {
   showModal('Gra została zapisana!');
 }
-function showSaveGameErrorModal(errorMessage) {
-  showModal('Błąd podczas zapisywania gry: ' + errorMessage);
+function showSaveGameErrorModal() {
+  showModal('Błąd podczas zapisywania gry: ');
 }
 
 function showLoadSuccessModal() {
   showModal('Gra została wczytana!');
 }
 
-function showLoadErrorModal(errorMessage) {
-  showModal('Nie udało się wczytać serwera: ' + errorMessage);
+function showLoadErrorModal() {
+  showModal('Nie udało się wczytać serwera: ');
 }
