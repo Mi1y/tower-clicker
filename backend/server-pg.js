@@ -28,8 +28,6 @@ function defaultGameState() {
         unlockedFloors: [1],
         defeatedBosses: [],
         currentBoss: null,
-        shownFloorAlerts: [],
-        shownMachineAlerts: []
     };
 }
 
@@ -46,7 +44,7 @@ app.get('/api/game', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT clicks, currentFloor, currentBoss,
-                   unlockedFloors, defeatedBosses, shownFloorAlerts, shownMachineAlerts,
+                   unlockedFloors, defeatedBosses,
                    machines
             FROM Game
             WHERE id = $1
@@ -61,8 +59,6 @@ app.get('/api/game', async (req, res) => {
                 state.currentBoss = row.currentboss;
                 state.unlockedFloors = row.unlockedfloors || [];
                 state.defeatedBosses = row.defeatedbosses || [];
-                state.shownFloorAlerts = row.shownflooralerts || [];
-                state.shownMachineAlerts = row.shownmachinealerts || [];
                 state.machines = row.machines || [];
             } catch (e) {
                 console.warn('Błąd parsowania JSON z bazy, wrzucam default:', e);
@@ -89,7 +85,7 @@ app.post('/api/game', async (req, res) => {
 
     try {
         await pool.query(`
-            INSERT INTO Game (id, clicks, currentFloor, currentBoss, unlockedFloors, defeatedBosses, shownFloorAlerts, shownMachineAlerts, machines)
+            INSERT INTO Game (id, clicks, currentFloor, currentBoss, unlockedFloors, defeatedBosses, machines)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             ON CONFLICT (id) DO UPDATE SET
                 clicks = $2,
@@ -97,9 +93,7 @@ app.post('/api/game', async (req, res) => {
                 currentBoss = $4,
                 unlockedFloors = $5,
                 defeatedBosses = $6,
-                shownFloorAlerts = $7,
-                shownMachineAlerts = $8,
-                machines = $9
+                machines = $7
         `, [
             1,
             Math.floor(gameObj.clicks),
@@ -107,8 +101,6 @@ app.post('/api/game', async (req, res) => {
             currentBoss,
             JSON.stringify(gameObj.unlockedFloors || []),
             JSON.stringify(gameObj.defeatedBosses || []),
-            JSON.stringify(gameObj.shownFloorAlerts || []),
-            JSON.stringify(gameObj.shownMachineAlerts || []),
             JSON.stringify(gameObj.machines || [])
         ]);
 

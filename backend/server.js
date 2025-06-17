@@ -41,8 +41,6 @@ function defaultGameState() {
         unlockedFloors: [1],
         defeatedBosses: [],
         currentBoss: null,
-        shownFloorAlerts: [],
-        shownMachineAlerts: []
     };
 }
 
@@ -62,7 +60,7 @@ app.get('/api/game', async (req, res) => {
             .input('id', sql.Int, 1)
             .query(`
         SELECT clicks, currentFloor, currentBoss,
-               unlockedFloors, defeatedBosses, shownFloorAlerts, shownMachineAlerts,
+               unlockedFloors, defeatedBosses,
                machines
         FROM Game
         WHERE id = @id
@@ -77,8 +75,6 @@ app.get('/api/game', async (req, res) => {
                 state.currentBoss = row.currentBoss;
                 state.unlockedFloors = JSON.parse(row.unlockedFloors);
                 state.defeatedBosses = JSON.parse(row.defeatedBosses);
-                state.shownFloorAlerts = JSON.parse(row.shownFloorAlerts);
-                state.shownMachineAlerts = JSON.parse(row.shownMachineAlerts);
                 state.machines = JSON.parse(row.machines);
             } catch (e) {
                 console.warn('Błąd parsowania JSON z bazy, wrzucam default:', e);
@@ -103,8 +99,6 @@ app.post('/api/game', async (req, res) => {
     }
     const unlockedFloorsJSON = JSON.stringify(gameObj.unlockedFloors || []);
     const defeatedBossesJSON = JSON.stringify(gameObj.defeatedBosses || []);
-    const shownFloorAlertsJSON = JSON.stringify(gameObj.shownFloorAlerts || []);
-    const shownMachineAlertsJSON = JSON.stringify(gameObj.shownMachineAlerts || []);
     const machinesJSON = JSON.stringify(gameObj.machines || []);
     const currentBoss = (typeof gameObj.currentBoss === 'string') ? gameObj.currentBoss : null;
 
@@ -117,8 +111,6 @@ app.post('/api/game', async (req, res) => {
             .input('currentBoss', sql.NVarChar(100), currentBoss)
             .input('unlockedFloors', sql.NVarChar(sql.MAX), unlockedFloorsJSON)
             .input('defeatedBosses', sql.NVarChar(sql.MAX), defeatedBossesJSON)
-            .input('shownFloorAlerts', sql.NVarChar(sql.MAX), shownFloorAlertsJSON)
-            .input('shownMachineAlerts', sql.NVarChar(sql.MAX), shownMachineAlertsJSON)
             .input('machines', sql.NVarChar(sql.MAX), machinesJSON)
             .query(`
           MERGE Game AS target
@@ -131,12 +123,10 @@ app.post('/api/game', async (req, res) => {
               currentBoss = @currentBoss,
               unlockedFloors = @unlockedFloors,
               defeatedBosses = @defeatedBosses,
-              shownFloorAlerts = @shownFloorAlerts,
-              shownMachineAlerts = @shownMachineAlerts,
               machines = @machines
           WHEN NOT MATCHED THEN
-            INSERT (id, clicks, currentFloor, currentBoss, unlockedFloors, defeatedBosses, shownFloorAlerts, shownMachineAlerts, machines)
-            VALUES (@id, @clicks, @currentFloor, @currentBoss, @unlockedFloors, @defeatedBosses, @shownFloorAlerts, @shownMachineAlerts, @machines);
+            INSERT (id, clicks, currentFloor, currentBoss, unlockedFloors, defeatedBosses, machines)
+            VALUES (@id, @clicks, @currentFloor, @currentBoss, @unlockedFloors, @defeatedBosses, @machines);
         `);
         res.send({ status: 'ok' });
     } catch (err) {

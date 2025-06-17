@@ -81,3 +81,18 @@ function showResetConfirmModal(onConfirm) {
 function showInsufficientClicksModal() {
   showModal('Masz za mało klików!');
 }
+
+function showSaveGameSuccessModal() {
+  showModal('Gra została zapisana!');
+}
+function showSaveGameErrorModal(errorMessage) {
+  showModal('Błąd podczas zapisywania gry: ' + errorMessage);
+}
+
+function showLoadSuccessModal() {
+  showModal('Gra została wczytana!');
+}
+
+function showLoadErrorModal(errorMessage) {
+  showModal('Nie udało się wczytać serwera: ' + errorMessage);
+}

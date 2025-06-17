@@ -27,15 +27,10 @@ function checkUnlockedFloors() {
       showFloorUnlockedModal(nextFloorData.name, newMachines);
       
       game.unlockedFloors.push(nextFloor);
-      if (!game.shownFloorAlerts.includes(nextFloor)) {
-        showModal(`🏢 Odblokowano: ${floors.find(f => f.id === nextFloor).name}`);
-        game.shownFloorAlerts.push(nextFloor);
-        saveGameSilent(); // zamiast saveGame()
-      }
+      saveGameSilent();
     }
     
     game.currentFloor = nextFloor;
-    checkUnlockedMachines();
     checkUnlockedFloors();
   }
 }
@@ -68,7 +63,7 @@ function attackBoss() {
     updateClicks();
     checkUnlockedFloors();
     renderBossSection();
-    saveGameSilent(); // zamiast saveGame()
+    saveGameSilent();
   } else {
     showBossAttackErrorModal(cost, game.clicks);
   }

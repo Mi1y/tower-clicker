@@ -16,7 +16,7 @@ clickBtn.addEventListener('click', () => {
   animateClicks();
   checkUnlockedFloors();
   renderBossSection();
-  saveGameSilent(); // zamiast saveGame()
+  saveGameSilent();
 });
 
 function collectClicksPerSecond() {
