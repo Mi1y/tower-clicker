@@ -14,25 +14,33 @@ function saveGame() {
 function loadGame() {
   const saved = localStorage.getItem('clickFactoryIdleGame');
   if (saved) {
-    const loaded = JSON.parse(saved);
-
-    game.clicks = loaded.clicks || 0;
-    game.currentFloor = loaded.currentFloor || 1;
-    game.unlockedFloors = loaded.unlockedFloors || [1];
-    game.defeatedBosses = loaded.defeatedBosses || [];
-    game.currentBoss = loaded.currentBoss || null;
-
-    if (loaded.machines && loaded.machines.length > 0) {
-      game.machines = loaded.machines.map(machine => ({
-        id: machine.id,
-        name: machine.name,
-        baseCost: machine.baseCost,
-        cost: machine.cost,
-        baseCPS: machine.baseCPS,
-        cps: machine.baseCPS * (1 + 0.5 * (machine.upgradeLevel || 0)),
-        count: machine.count,
-        upgradeLevel: machine.upgradeLevel || 0
-      }));
+    const data = JSON.parse(saved);
+    game.clicks = typeof data.clicks === 'number' ? data.clicks : 0;
+    game.currentFloor = typeof data.currentFloor === 'number' ? data.currentFloor : 1;
+    game.unlockedFloors = Array.isArray(data.unlockedFloors) ? data.unlockedFloors : [1];
+    game.defeatedBosses = Array.isArray(data.defeatedBosses) ? data.defeatedBosses : [];
+    game.currentBoss = typeof data.currentBoss === 'string' ? data.currentBoss : null;
+    
+    if (Array.isArray(data.machines)) {
+      game.machines = data.machines.map(savedMachine => {
+        const languageMachine = machines.find(m => m.id === savedMachine.id);
+        
+        if (languageMachine) {
+          return {
+            id: savedMachine.id,
+            name: languageMachine.name,
+            baseCost: languageMachine.baseCost,
+            cost: savedMachine.cost,
+            baseCPS: languageMachine.baseCPS,
+            cps: languageMachine.baseCPS * (1 + 0.5 * (savedMachine.upgradeLevel || 0)),
+            count: savedMachine.count,
+            upgradeLevel: savedMachine.upgradeLevel || 0,
+            unlockedAtFloor: languageMachine.unlockedAtFloor
+          };
+        } else {
+          return savedMachine;
+        }
+      });
     } else {
       game.machines = [];
     }
@@ -81,19 +89,24 @@ function importJson(event) {
       game.currentBoss = importedGame.currentBoss || null;
 
       if (importedGame.machines && importedGame.machines.length > 0) {
-        game.machines = importedGame.machines.map(machine => ({
-          id: machine.id || 'robot',
-          name: machine.name || '🤖 Robot Kliker',
-          baseCost: machine.baseCost || 15,
-          cost: machine.cost || machine.baseCost || 15,
-          baseCPS: machine.baseCPS || 1,
-          cps: machine.cps || machine.baseCPS || 1,
-          count: machine.count || 0,
-          upgradeLevel: machine.upgradeLevel || 0
-        }));
-
-        game.machines.forEach(machine => {
-          machine.cps = machine.baseCPS * (1 + 0.5 * machine.upgradeLevel);
+        game.machines = importedGame.machines.map(importedMachine => {
+          const languageMachine = machines.find(m => m.id === importedMachine.id);
+          
+          if (languageMachine) {
+            return {
+              id: importedMachine.id,
+              name: languageMachine.name,
+              baseCost: languageMachine.baseCost,
+              cost: importedMachine.cost || languageMachine.baseCost,
+              baseCPS: languageMachine.baseCPS,
+              cps: languageMachine.baseCPS * (1 + 0.5 * (importedMachine.upgradeLevel || 0)),
+              count: importedMachine.count || 0,
+              upgradeLevel: importedMachine.upgradeLevel || 0,
+              unlockedAtFloor: languageMachine.unlockedAtFloor
+            };
+          } else {
+            return importedMachine;
+          }
         });
       }
 
@@ -116,8 +129,6 @@ function importJson(event) {
   };
 
   reader.readAsText(file);
-
-  // wyczysc input po uzyciu importu
   event.target.value = '';
 }
 

@@ -80,17 +80,20 @@ function renderBossSection() {
 
   if (game.currentBoss) {
     const hpPercent = (game.currentBoss.hp / game.currentBoss.maxHp) * 100;
+    const defeatText = typeof t === 'function' ? t('defeat-boss', { cost: game.currentBoss.hp }) : `Defeat for ${game.currentBoss.hp} clicks`;
+    const bossText = typeof t === 'function' ? t('boss-fight', { name: game.currentBoss.name }) : `⚔️ ${game.currentBoss.name} ⚔️`;
+    
     bossDiv.innerHTML = `
       <div class="boss-fight">
         <h2>${game.currentBoss.floorName}</h2>
         <div class="boss-info">
-          <div class="boss-name">⚔️ ${game.currentBoss.name} ⚔️</div>
+          <div class="boss-name">${bossText}</div>
           <div class="boss-hp-bar">
             <div class="hp-fill" style="width: ${hpPercent}%"></div>
           </div>
         </div>
         <button onclick="attackBoss()" class="attack-btn" ${game.clicks < game.currentBoss.hp ? 'disabled' : ''}>
-          Pokonaj za ${game.currentBoss.hp} klików
+          ${defeatText}
         </button>
       </div>
     `;
@@ -104,7 +107,19 @@ function updateBossButton() {
   const btn = document.querySelector('.attack-btn');
   if (btn) {
     btn.disabled = game.clicks < game.currentBoss.hp;
-    btn.textContent = `Pokonaj za ${game.currentBoss.hp} klików`;
+    const defeatText = typeof t === 'function' ? t('defeat-boss', { cost: game.currentBoss.hp }) : `Defeat for ${game.currentBoss.hp} clicks`;
+    btn.textContent = defeatText;
+  }
+}
+
+function refreshBossData() {
+  if (game.currentBoss) {
+    const currentFloor = floors.find(f => f.id === game.currentBoss.floorId);
+    if (currentFloor) {
+      game.currentBoss.floorName = currentFloor.name;
+      game.currentBoss.name = currentFloor.boss.name;
+      renderBossSection();
+    }
   }
 }
 
