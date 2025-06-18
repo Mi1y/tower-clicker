@@ -47,26 +47,31 @@ function renderMachines() {
     const machineDiv = document.createElement('div');
     machineDiv.className = 'machine';
 
+    const quantityText = typeof t === 'function' ? t('quantity') : 'Quantity:';
+    const productionText = typeof t === 'function' ? t('production') : 'Production:';
+    const clicksPerSecText = typeof t === 'function' ? t('clicks-per-sec') : 'clicks/sec';
+    const upgradesText = typeof t === 'function' ? t('upgrades') : 'Upgrades:';
+    const productionMultiplierText = typeof t === 'function' ? t('production-multiplier') : 'production';
+    const buyText = typeof t === 'function' ? t('buy-cost', { cost: getBuyCost(machine) }) : `Buy (${getBuyCost(machine)})`;
+    const upgradeText = typeof t === 'function' ? t('upgrade-cost', { cost: getUpgradeCost(machine) }) : `Upgrade (${getUpgradeCost(machine)})`;
+
     machineDiv.innerHTML = `
       <div class="machine-info">
         <div class="machine-name">${machine.name}</div>
         <div class="machine-stats">
-          Ilość: ${machine.count} <br/>
-          Produkcja: ${(machine.cps * machine.count).toFixed(1)} klików/sek <br/>
-          Ulepszenia: ${machine.upgradeLevel} (x${(1 + 0.5 * machine.upgradeLevel).toFixed(2)} produkcji)
+          ${quantityText} ${machine.count} <br/>
+          ${productionText} ${(machine.cps * machine.count).toFixed(1)} ${clicksPerSecText} <br/>
+          ${upgradesText} ${machine.upgradeLevel} (x${(1 + 0.5 * machine.upgradeLevel).toFixed(2)} ${productionMultiplierText})
         </div>
       </div>
       <div class="buttons-group">
-        <button id="buy-${machine.id}">Kup (${getBuyCost(machine)})</button>
-        <button id="upgrade-${machine.id}" ${game.clicks < getUpgradeCost(machine) ? 'disabled' : ''}>
-          Ulepsz (${getUpgradeCost(machine)})
+        <button id="buy-${machine.id}">${buyText}</button>
+        <button id="upgrade-${machine.id}" ${game.clicks < getUpgradeCost(machine) ? 'disabled' : ''}">
+          ${upgradeText}
         </button>
       </div>
     `;
     machinesDiv.appendChild(machineDiv);
-
-    // debug
-    // console.log('Kliksy:', game.clicks, 'Koszt ulepszenia:', getUpgradeCost(machine), 'Ilość:', machine.count, 'Poziom:', machine.upgradeLevel);
 
     document.getElementById(`buy-${machine.id}`).onclick = () => {
       const buyCost = getBuyCost(machine);
@@ -75,7 +80,6 @@ function renderMachines() {
         machine.count++;
         updateClicks();
         renderMachines();
-        // saveGameToServer();
       } else {
         showInsufficientClicksModal();
       }
@@ -90,7 +94,6 @@ function renderMachines() {
         machine.cps = machine.baseCPS * (1 + 0.5 * machine.upgradeLevel);
         updateClicks();
         renderMachines();
-        // saveGameToServer();
       }
     };
   });
@@ -104,6 +107,16 @@ function updateMachineButtons() {
     if (upgradeBtn) upgradeBtn.disabled = game.clicks < getUpgradeCost(machine);
   });
 }
+
+function refreshMachineNames() {
+  game.machines.forEach(gameMachine => {
+    const languageMachine = machines.find(m => m.id === gameMachine.id);
+    if (languageMachine) {
+      gameMachine.name = languageMachine.name;
+    }
+  });
+}
+
 
 setInterval(updateMachineButtons, 100);
 

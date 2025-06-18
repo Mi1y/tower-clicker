@@ -1,4 +1,4 @@
-const machines = [
+window.machinesPl = [
   {
     "id": "robot",
     "name": "🤖 Robot Kliker",
@@ -77,13 +77,6 @@ const machines = [
     "unlockedAtFloor": 50
   },
   {
-    "id": "time_machine",
-    "name": "⏰ Maszyna Czasu",
-    "baseCost": 1500000000,
-    "baseCPS": 20000000,
-    "unlockedAtFloor": 51
-  },
-    {
     "id": "god_machine",
     "name": "⚡ Maszyna Bogów",
     "baseCost": 7500000000,

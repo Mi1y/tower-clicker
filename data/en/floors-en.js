@@ -1,4 +1,4 @@
-const floors = [
+window.floorsEn = [
   {
     "id": 1,
     "name": "Floor 1 - Workshop",
@@ -466,8 +466,7 @@ const floors = [
       "name": "Doctor Who",
       "hp": 7000000,
       "reward": 6000000
-    },
-    "unlocksMachine": "time_machine"
+    }
   },
     {
     "id": 52,

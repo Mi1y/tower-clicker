@@ -1,4 +1,4 @@
-const floors = [
+window.floorsPl = [
   {
     "id": 1,
     "name": "Piętro 1 - Warsztat",
@@ -466,8 +466,7 @@ const floors = [
       "name": "Doktor Who",
       "hp": 7000000,
       "reward": 6000000
-    },
-    "unlocksMachine": "time_machine"
+    }
   },
   {
     "id": 52,

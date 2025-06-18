@@ -3,13 +3,13 @@ function showModal(message, type = 'alert', onConfirm = null) {
   const modal = document.getElementById('modal-window');
   const content = document.getElementById('modal-content');
 
-  // Przyciski
+  // Buttons
   const btnOk = document.getElementById('modal-ok-button');
   const btnYes = document.getElementById('modal-confirm-yes');
   const btnNo = document.getElementById('modal-confirm-no');
 
-  // content.textContent = message;
   content.innerHTML = message.replace(/\n/g, '<br>');
+  
   // Reset visibility
   btnOk.classList.add('hidden');
   btnYes.classList.add('hidden');
@@ -37,62 +37,59 @@ function hideModal() {
   document.getElementById('modal-window').classList.add('hidden');
 }
 
-document.getElementById('modal-ok-button').addEventListener('click', hideModal);
-
-
 // helpers
-
 function showFloorUnlockedModal(floorName, newMachines = []) {
   const message = newMachines.length > 0 
-    ? `🏢 Odblokowano nowe piętro: ${floorName}<br>🎉 Nowe maszyny: ${newMachines.join(', ')}`
-    : `🏢 Odblokowano nowe piętro: ${floorName}`;
+    ? `${t('floor-unlocked')} ${floorName}<br>${t('machine-unlocked')} ${newMachines.join(', ')}`
+    : `${t('floor-unlocked')} ${floorName}`;
   
   showModal(message);
 }
 
 function showMachineUnlockedModal(machineName) {
-  showModal(`🎉 Odblokowano nową maszynę: ${machineName}`);
+  showModal(t('machine-unlocked') + ' ' + machineName);
 }
 
 function showBossAttackErrorModal(cost, clicks) {
-  showModal(`Potrzebujesz ${cost} klików, a masz tylko ${Math.floor(clicks)}!`);
+  showModal(t('insufficient-clicks', {cost, current: Math.floor(clicks)}));
 }
 
 function showExportSuccessModal() {
-  showModal('Gra została wyeksportowana!');
+  showModal(t('game-exported'));
 }
 
 function showImportSuccessModal() {
-  showModal('Gra została pomyślnie zaimportowana!');
+  showModal(t('game-imported'));
 }
 
 function showImportErrorModal() {
-  showModal('Błąd podczas importu: ');
+  showModal(t('import-error'));
 }
 
 function showFileReadErrorModal() {
-  showModal('Błąd podczas czytania pliku!');
+  showModal(t('file-read-error'));
 }
 
 function showResetConfirmModal(onConfirm) {
-  showModal('Czy na pewno chcesz zresetować grę?', 'confirm', onConfirm);
+  showModal(t('reset-confirm'), 'confirm', onConfirm);
 }
 
 function showInsufficientClicksModal() {
-  showModal('Masz za mało klików!');
+  showModal(t('not-enough-clicks'));
 }
 
 function showSaveGameSuccessModal() {
-  showModal('Gra została zapisana!');
+  showModal(t('game-saved'));
 }
+
 function showSaveGameErrorModal() {
-  showModal('Błąd podczas zapisywania gry: ');
+  showModal(t('save-error'));
 }
 
 function showLoadSuccessModal() {
-  showModal('Gra została wczytana!');
+  showModal(t('game-loaded'));
 }
 
 function showLoadErrorModal() {
-  showModal('Nie udało się wczytać serwera: ');
+  showModal(t('load-error'));
 }

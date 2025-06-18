@@ -12,10 +12,10 @@ app.use(cors());
 app.use(express.json());
 
 const dbConfig = {
-    user: 'Fabryka',
-    password: 'qaz1234;',
+    user: 'your_username',
+    password: 'your_password;',
     server: 'localhost',
-    database: 'FabrykaKlikow',
+    database: 'your_database',
     options: {
         trustServerCertificate: true
     }

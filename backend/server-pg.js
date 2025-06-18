@@ -11,11 +11,11 @@ app.use(cors());
 app.use(express.json());
 
 const dbConfig = {
-    user: 'xyz', // <- username db
-    password: '123', // <- password db
-    host: 'localhost', // <- host db (default 'localhost')
-    database: '', // <- database name
-    port: 5432, // <- port
+    user: 'your_username', 
+    password: 'your_password', 
+    host: 'localhost', 
+    database: 'your_database', 
+    port: 5432, 
 };
 
 const pool = new Pool(dbConfig);

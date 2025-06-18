@@ -2,7 +2,8 @@ const clicksDisplay = document.getElementById('clicks');
 const clickBtn = document.getElementById('click-btn');
 
 function updateClicks() {
-  clicksDisplay.textContent = `Kliksy: ${Math.floor(game.clicks)}`;
+  const clicksText = typeof t === 'function' ? t('clicks') : 'Kliksy:';
+  clicksDisplay.textContent = `${clicksText} ${Math.floor(game.clicks)}`;
 }
 
 function animateClicks() {

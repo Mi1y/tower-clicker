@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tower Clicker - Idle Game</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/public/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+  
+  <script defer src="data/translations.js"></script>
+  <script defer src="components/language.js"></script>
+  
+  <script defer src="components/modal.js"></script>
+  <script defer src="mechanics/clicks-logic.js"></script>
+  <script defer src="mechanics/floors-logic.js"></script>
+  <script defer src="mechanics/machines-logic.js"></script>
+  <script defer src="tower-clicker.js"></script>
+</head>
+<body>
+
+  <div id="content">
+    
+    <div id="language-selector">
+      <label for="language-select" data-i18n="language"></label>
+      <select id="language-select">
+        <option value="pl">🇵🇱 Polski</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+    </div>
+
+    <h1 data-i18n="title"></h1>
+    
+    <div id="clicks" data-i18n="clicks" title="Kliksy"></div>
+    
+    <button id="click-btn" data-i18n="click-button" aria-label="Kliknij, aby zdobyć kliksy"></button>
+    
+    <div id="floors"></div>
+    
+    <div id="machines"></div>
+
+    <div id="footer">
+      <p data-i18n="description"></p>
+      <button onclick="saveGameToServer()" data-i18n="save-game"></button>
+      <button onclick="resetGame()" data-i18n="reset-game"></button>
+    </div>
+
+    <div id="modal-backdrop" class="hidden">
+      <div id="modal-window" class="hidden">
+        <div id="modal-content"></div>
+        <div id="modal-buttons">
+          <button id="modal-ok-button" class="modal-button hidden" data-i18n="close"></button>
+          <button id="modal-confirm-yes" class="modal-button hidden" data-i18n="yes"></button>
+          <button id="modal-confirm-no" class="modal-button hidden" data-i18n="no"></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
