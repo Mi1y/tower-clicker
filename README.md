@@ -16,7 +16,7 @@ Welcome to **Tower Clicker** – a simple, fun, and addictive idle/incremental g
 
 ## 🚀 Live Demo
 
-- **Local Version**: ()
+- **Local Version**: (https://mi1y.github.io/tower-clicker/)
 
 ---
 
